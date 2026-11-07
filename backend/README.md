@@ -1,6 +1,6 @@
 # CollegeConnect Backend
 
-This folder contains the Spring Boot foundation and the Phase 4 persistence model. Authentication rules, API endpoints, business workflows, and user-facing features are still deferred to their approved phases.
+This folder contains the Spring Boot foundation, Phase 4 persistence model, and the Phase 5 authentication foundation. Business workflows, resource-level ownership authorization, and user-facing features remain deferred to their approved phases.
 
 ## Requirements
 
@@ -41,13 +41,28 @@ Tests activate the `test` profile, apply the Flyway migration to an in-memory H2
 Set the connection settings in your PowerShell session. Substitute values from your local MySQL setup; do not put real passwords in this file or commit them.
 
 ```powershell
+$jwtSecretBytes = New-Object byte[] 32
+$jwtRandom = [Security.Cryptography.RandomNumberGenerator]::Create()
+$jwtRandom.GetBytes($jwtSecretBytes)
+$env:JWT_SECRET_BASE64 = [Convert]::ToBase64String($jwtSecretBytes)
+$jwtRandom.Dispose()
 $env:DB_URL = "jdbc:mysql://localhost:3306/collegeconnect"
 $env:DB_USERNAME = "<your-local-mysql-username>"
 $env:DB_PASSWORD = "<your-local-mysql-password>"
 mvn spring-boot:run
 ```
 
-The configured database must exist and be reachable. Flyway applies pending migrations at startup. The actuator health endpoint is `/actuator/health`; Spring Security's starter defaults may require authentication until Phase 5 configures endpoint access.
+The JWT secret is generated locally and held only in the environment variable; keep it private and use a managed secret store outside local development. It must be Base64 that decodes to at least 32 random bytes for HS256. The configured database must exist and be reachable. Flyway applies pending migrations at startup.
+
+The login endpoint is `POST /api/auth/login` with JSON fields `loginIdentifier` and `password`. Successful Admin, Professor, and Student login returns a 15-minute Bearer access token. Parent dashboard login is not enabled yet. Send an access token in the `Authorization: Bearer <token>` header. Admin, Professor, Student, and Parent routes are guarded under `/api/admin/**`, `/api/professor/**`, `/api/student/**`, and `/api/parent/**` respectively. Refresh tokens, logout/revocation, password reset, login throttling, parent dashboard login, and record-ownership checks are deferred to later steps.
+
+Passwords must be stored using the configured BCrypt `PasswordEncoder`; account onboarding must call that encoder rather than persisting a plain-text password. Login is denied unless the account status is `ACTIVE`.
+
+## Security defaults
+Only login and the documented actuator endpoints are public.
+Admin, Professor, Student, and Parent API routes require a matching role in a valid JWT.
+Unknown routes are denied by default, even when the caller has a valid token.
+Tokens use HS256 and expire after 15 minutes; keep the signing secret outside source control.
 
 To package the application:
 

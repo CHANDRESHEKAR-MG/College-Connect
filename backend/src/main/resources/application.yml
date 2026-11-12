@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: collegeconnect-backend
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    enabled: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+collegeconnect:
+  documents:
+    storage-directory: ${COLLEGECONNECT_DOCUMENTS_DIRECTORY:}
+    max-size-bytes: 5242880
+  attendance:
+    correction:
+      professor-enabled: false
+      professor-window: PT0S
+  security:
+    jwt:
+      secret: ${JWT_SECRET_BASE64}
+  whatsapp:
+    enabled: ${WHATSAPP_ENABLED:false}
+    access-token: ${WHATSAPP_ACCESS_TOKEN:}
+    phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
+    api-version: ${WHATSAPP_API_VERSION:v22.0}
+    app-secret: ${WHATSAPP_APP_SECRET:}
+    verify-token: ${WHATSAPP_WEBHOOK_VERIFY_TOKEN:}
+    template-language: ${WHATSAPP_TEMPLATE_LANGUAGE:en}
+    batch-size: ${WHATSAPP_WORKER_BATCH_SIZE:10}
+    worker-delay-ms: ${WHATSAPP_WORKER_DELAY_MS:5000}
+    webhook-poll-delay-ms: ${WHATSAPP_WEBHOOK_POLL_DELAY_MS:1000}
+    max-attempts: ${WHATSAPP_MAX_ATTEMPTS:5}
+    lease-duration: ${WHATSAPP_WORKER_LEASE:PT2M}
+    initial-backoff: ${WHATSAPP_RETRY_INITIAL_BACKOFF:PT1M}
+    max-backoff: ${WHATSAPP_RETRY_MAX_BACKOFF:PT1H}
+    templates:
+      "[TPL-ATT-ABSENT]": ${WHATSAPP_TEMPLATE_ATTENDANCE_ABSENT:}
+      "[TPL-ATT-PRESENT]": ${WHATSAPP_TEMPLATE_ATTENDANCE_PRESENT:}
+      "[TPL-ATT-SUMMARY]": ${WHATSAPP_TEMPLATE_ATTENDANCE_SUMMARY:}
+      "[TPL-ABS-REMIND]": ${WHATSAPP_TEMPLATE_ABSENCE_REMINDER:}
+      "[TPL-LVE-SUBMITTED]": ${WHATSAPP_TEMPLATE_LEAVE_SUBMITTED:}
+      "[TPL-LVE-DECISION]": ${WHATSAPP_TEMPLATE_LEAVE_DECISION:}
+      "[TPL-ABS-DECISION]": ${WHATSAPP_TEMPLATE_ABSENCE_DECISION:}
+      "[TPL-CIE-PUB]": ${WHATSAPP_TEMPLATE_CIE_PUBLISHED:}
+      "[TPL-SEE-PUB]": ${WHATSAPP_TEMPLATE_SEE_PUBLISHED:}
+      "[TPL-VERIFY]": ${WHATSAPP_TEMPLATE_VERIFY:}
+      "[TPL-COR]": ${WHATSAPP_TEMPLATE_CORRECTION:}
+
+server:
+  error:
+    include-message: never
+    include-stacktrace: never
+
+info:
+  app:
+    name: CollegeConnect Backend
+    description: Backend foundation for CollegeConnect
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    env:
+      enabled: false
+  endpoint:
+    health:
+      show-details: never

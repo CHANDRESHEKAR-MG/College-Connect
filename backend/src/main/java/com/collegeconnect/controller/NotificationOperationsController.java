@@ -3,6 +3,7 @@ package com.collegeconnect.controller;
 import com.collegeconnect.dto.NotificationOutboxActionRequest;
 import com.collegeconnect.dto.NotificationOutboxResponse;
 import com.collegeconnect.dto.NotificationOutboxSummaryResponse;
+import com.collegeconnect.dto.NotificationReconciliationRequest;
 import com.collegeconnect.dto.NotificationResendRequest;
 import com.collegeconnect.service.NotificationOperationsService;
 import jakarta.validation.Valid;
@@ -52,6 +53,15 @@ public class NotificationOperationsController {
             @Valid @RequestBody NotificationResendRequest request,
             Authentication authentication) {
         return ResponseEntity.ok(notificationOperationsService.resend(
+                currentUserId(authentication), eventId, request));
+    }
+
+    @PostMapping("/api/admin/notifications/outbox/{eventId}/reconcile")
+    public ResponseEntity<NotificationOutboxResponse> reconcile(
+            @PathVariable("eventId") Long eventId,
+            @Valid @RequestBody NotificationReconciliationRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(notificationOperationsService.reconcileAmbiguous(
                 currentUserId(authentication), eventId, request));
     }
 

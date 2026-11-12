@@ -6,6 +6,7 @@ import com.collegeconnect.dto.AbsenceReviewRequest;
 import com.collegeconnect.dto.LeaveRequestCreateRequest;
 import com.collegeconnect.dto.LeaveRequestResponse;
 import com.collegeconnect.dto.LeaveReviewRequest;
+import com.collegeconnect.security.Role;
 import com.collegeconnect.service.ParentWorkflowService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -31,6 +32,23 @@ public class ParentWorkflowController {
             @PathVariable("studentId") Long studentId,
             Authentication authentication) {
         return ResponseEntity.ok(parentWorkflowService.listParentAbsences(currentUserId(authentication), studentId));
+    }
+
+    @GetMapping("/api/student/absence-cases")
+    public ResponseEntity<List<AbsenceCaseResponse>> listStudentAbsences(Authentication authentication) {
+        return ResponseEntity.ok(parentWorkflowService.listStudentAbsences(currentUserId(authentication)));
+    }
+
+    @GetMapping("/api/professor/absence-cases")
+    public ResponseEntity<List<AbsenceCaseResponse>> listProfessorAbsences(Authentication authentication) {
+        return ResponseEntity.ok(parentWorkflowService.listProfessorAbsences(
+                currentUserId(authentication), Role.PROFESSOR));
+    }
+
+    @GetMapping("/api/admin/absence-cases")
+    public ResponseEntity<List<AbsenceCaseResponse>> listAdminAbsences(Authentication authentication) {
+        return ResponseEntity.ok(parentWorkflowService.listAdminAbsences(
+                currentUserId(authentication), Role.ADMIN));
     }
 
     @PostMapping("/api/parent/absence-cases/{caseId}/explanation")
@@ -59,6 +77,18 @@ public class ParentWorkflowController {
     @GetMapping("/api/parent/leave-requests")
     public ResponseEntity<List<LeaveRequestResponse>> listLeave(Authentication authentication) {
         return ResponseEntity.ok(parentWorkflowService.listParentLeave(currentUserId(authentication)));
+    }
+
+    @GetMapping("/api/professor/leave-requests")
+    public ResponseEntity<List<LeaveRequestResponse>> listProfessorLeave(Authentication authentication) {
+        return ResponseEntity.ok(parentWorkflowService.listProfessorLeave(
+                currentUserId(authentication), Role.PROFESSOR));
+    }
+
+    @GetMapping("/api/admin/leave-requests")
+    public ResponseEntity<List<LeaveRequestResponse>> listAdminLeave(Authentication authentication) {
+        return ResponseEntity.ok(parentWorkflowService.listAdminLeave(
+                currentUserId(authentication), Role.ADMIN));
     }
 
     @PostMapping("/api/parent/leave-requests/{requestId}/cancel")

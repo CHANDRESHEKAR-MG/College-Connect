@@ -1,0 +1,15 @@
+/target/
+/.idea/
+/.vscode/
+*.iml
+.env
+.env.*
+!.env.example
+
+# Local JShell scratch files created during interactive debugging
+/System.out.println(Base64.getEncoder().encodeToString(key))
+/byte[32]
+/byte[]
+/import
+/jshell
+/new
